@@ -12,17 +12,15 @@ function patch(vnode, container) {
   // vnode -> flag
   // element
 
-
   // 去处理组件
   // 判断 是不是 element
   // 是element 那么就处理element
-  const { shapeFlag } = vnode
-  // if (typeof vnode.type === "string") 
+  const { shapeFlag } = vnode;
+  // if (typeof vnode.type === "string")
 
   if (shapeFlag & ShapeFlags.ELEMENT) {
     processElemnt(vnode, container);
     // 判断是不是STATEFUL_COMPONENT
-
 
     // isObject(vnode.type)
   } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
@@ -39,7 +37,7 @@ function mountElement(vnode: any, container: any) {
   const el = (vnode.el = document.createElement(vnode.type));
 
   // string array
-  const { children, shapeFlag} = vnode;
+  const { children, shapeFlag } = vnode;
   //typeof children === "string"
   if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
     // text_children
@@ -53,7 +51,15 @@ function mountElement(vnode: any, container: any) {
   // props
   const { props } = vnode;
   for (const key in props) {
+    console.log(key);
     const val = props[key];
+    // 具体的click -> 通用
+    // on + Event name
+    const isOn = (key: string) => /^on[A-Z]/.test(key);
+    if (isOn(key)) {
+      const event = key.slice(2).toLowerCase();
+      el.addEventListener(event, val);
+    }
     el.setAttribute(key, val);
   }
   container.append(el);
