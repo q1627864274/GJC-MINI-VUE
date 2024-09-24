@@ -1,7 +1,8 @@
 import { h } from "../../lib/guide-mini-vue.esm.js";
-
+import { Foo } from "./Foo.js";
 window.self = null;
 export const App = {
+  name: "App",
   // 必须要写render
   render() {
     window.self = this;
@@ -19,7 +20,8 @@ export const App = {
           console.log("onMousedown");
         },
       },
-      "hi, " + this.msg
+      [h("div", {}, "hi, " + this.msg), h(Foo, {count: 1})]
+
       // [h("p", { class: "red" }, "hi"), h("p", { class: "blue" }, "mini-vu")]
     );
   },
