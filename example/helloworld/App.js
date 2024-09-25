@@ -14,13 +14,25 @@ export const App = {
         id: "root",
         class: ["red", "hard"],
         onClick: () => {
-          console.log("click");
+          // console.log("click");
         },
         onMousedown: () => {
-          console.log("onMousedown");
+          // console.log("onMousedown");
         },
       },
-      [h("div", {}, "hi, " + this.msg), h(Foo, {count: 1})]
+      [
+        h("div", {}, "hi, " + this.msg),
+        h(Foo, {
+          count: 1,
+          onAdd(a) {
+            // on + Event
+            // console.log("onAdd", a);
+          },
+          onAddFoo(){
+            // console.log("onAddFoo")
+          }
+        }),
+      ]
 
       // [h("p", { class: "red" }, "hi"), h("p", { class: "blue" }, "mini-vu")]
     );
