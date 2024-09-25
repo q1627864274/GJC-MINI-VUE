@@ -1,6 +1,7 @@
 import { isObject } from "../shared/index";
 import { ShapeFlags } from "../shared/ShapeFlags";
 import { createComponentInstance, setupComponent } from "./component";
+import { Fragment } from "./vnode";
 
 export function render(vnode, container) {
   // patch
@@ -12,21 +13,30 @@ function patch(vnode, container) {
   // vnode -> flag
   // element
 
-  // 去处理组件
-  // 判断 是不是 element
-  // 是element 那么就处理element
-  const { shapeFlag } = vnode;
-  // if (typeof vnode.type === "string")
+  // 判断 是不是 element | 组件
 
-  if (shapeFlag & ShapeFlags.ELEMENT) {
-    processElemnt(vnode, container);
-    // 判断是不是STATEFUL_COMPONENT
-
-    // isObject(vnode.type)
-  } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
-    processComponent(vnode, container);
+  const { type, shapeFlag } = vnode;
+  //  Fragment -> 只渲染children
+  switch (type) {
+    case Fragment:
+      processFragment(vnode, container)
+      break;
+    default:
+      if (shapeFlag & ShapeFlags.ELEMENT) {
+        processElemnt(vnode, container);
+        // 判断是不是STATEFUL_COMPONENT
+      } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
+        processComponent(vnode, container);
+      }
+      break;
   }
 }
+
+function processFragment(vnode: any, container: any){
+  // Implement
+  mountChildren(vnode, container)
+}
+
 function processElemnt(vnode: any, container: any) {
   mountElement(vnode, container);
 }
