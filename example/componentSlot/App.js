@@ -1,4 +1,4 @@
-import { h } from "../../lib/guide-mini-vue.esm.js";
+import { h, createTextVNode } from "../../lib/guide-mini-vue.esm.js";
 import { Foo } from "./Foo.js";
 
 export const App = {
@@ -10,8 +10,11 @@ export const App = {
       {},
       // 插槽的本质就是给到对应组件的children
       {
-        header: ({age}) => h("p", {}, "header" + age),
-        footer: () =>  h("p", {}, "footer"),
+        header: ({ age }) => [
+          h("p", {}, "header" + age),
+          createTextVNode("你好呀"),
+        ],
+        footer: () => h("p", {}, "footer"),
       }
     );
     return h("div", {}, [app, foo]);
