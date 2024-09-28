@@ -1,11 +1,16 @@
 import { effect } from "../reactivity/effect";
+import { EMPTY_OBJ } from "../shared";
 import { ShapeFlags } from "../shared/ShapeFlags";
 import { createComponentInstance, setupComponent } from "./component";
 import { createAppAPI } from "./createApp";
 import { Fragment, Text } from "./vnode";
 
 export function createRender(option) {
-  const { createElement, patchProp, insert } = option;
+  const {
+    createElement: hostCreateElement,
+    patchProp: hostPatchProp,
+    insert: hostInsert,
+  } = option;
 
   function render(vnode, container) {
     // patch
@@ -65,7 +70,31 @@ export function createRender(option) {
     console.log("n2", n2);
 
     //props
+    const oldProps = n1.props || EMPTY_OBJ;
+    const newProps = n2.props || EMPTY_OBJ;
+
+    const el = (n2.el = n1.el);
+    patchProps(el, oldProps, newProps);
     // children
+  }
+  function patchProps(el, oldProps, newProps) {
+    if (oldProps !== newProps) {
+      for (const key in newProps) {
+        const prevProp = oldProps[key];
+        const nextProp = newProps[key];
+        if (prevProp !== nextProp) {
+          hostPatchProp(el, key, prevProp, nextProp);
+        }
+      }
+
+      if (oldProps !== EMPTY_OBJ) {
+        for (const key in oldProps) {
+          if (!(key in newProps)) {
+            hostPatchProp(el, key, oldProps[key], null);
+          }
+        }
+      }
+    }
   }
 
   // 处理element
@@ -74,7 +103,7 @@ export function createRender(option) {
 
     // 不同平台渲染不同的 -> createElement
     // const el = (vnode.el = document.createElement(vnode.type));
-    const el = (vnode.el = createElement(vnode.type));
+    const el = (vnode.el = hostCreateElement(vnode.type));
 
     // children
     // string array
@@ -102,10 +131,10 @@ export function createRender(option) {
       //   el.addEventListener(event, val);
       // }
       // el.setAttribute(key, val);
-      patchProp(el, key, val);
+      hostPatchProp(el, key, null, val);
     }
     // container.append(el);
-    insert(el, container);
+    hostInsert(el, container);
   }
   function mountChildren(vnode, container, parentComponent) {
     vnode.children.forEach((v) => {
